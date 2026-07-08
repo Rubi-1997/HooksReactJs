@@ -43,7 +43,7 @@ const PaymentPage = () => {
             <input
               placeholder="card number"
               type="text "
-              className="rounded-full border px-1"
+              className="rounded-full border px-1" checked
             ></input>
             <label className="block font-bold text-sm py-1">
               Enter your card's expiry date:
@@ -51,7 +51,7 @@ const PaymentPage = () => {
             <input
               placeholder="card expiry"
               type="text"
-              className="rounded-full border px-1"
+              className="rounded-full border px-1" 
             ></input>
             <label className="block font-bold text-sm py-1">
               Enter your CVV number:
