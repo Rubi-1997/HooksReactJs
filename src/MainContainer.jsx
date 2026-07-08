@@ -1,31 +1,45 @@
-import React from "react";
-import { useState,useEffect } from "react";
+
+import { useState, useEffect } from "react";
 import userData from "./data.json";
+import { NavLink } from "react-router-dom";
+import React, { useContext } from "react";
+import UserContext from "./UserContext";
 
 const MainContainer = () => {
   const [data, setData] = useState(userData);
   const [status, setStatus] = useState(false);
-  const [cart, setCart] = useState([]);
+   const { cart, setCart } = useContext(UserContext);
   const [Items, setItems] = useState();
 
   const [ItemPrice, setItemPrice] = useState([]);
 
-  let myData = [];
+
 
   console.log(userData);
 
   const handleClick = (ele) => {
-    setStatus(true);
-    setCart((prevData) => [...prevData, ele]);
-    setCart([...cart, { ...ele, quantity: 1 }]);
+    setStatus(true)
+  setCart((prevCart) => {
+    const existing = prevCart.find((item) => item.id === ele.id);
+   
+    if (existing) {
+      return prevCart.map((item) =>
+        item.id === ele.id
+          ? { ...item, quantity: item.quantity + 1 }
+          : item
+      );
+    }
 
-    console.log(ele);
-    console.log("hello");
-    
- 
-              
-  };
-/* Increase qty of item which match the id */
+    return [...prevCart, { ...ele, quantity: 1 }];
+  });
+};
+
+
+
+
+
+
+  /* Increase qty of item which match the id */
   const IncreaseQty = (ele) => {
     const IsItemInCart = cart.find((item) => item.id === ele.id);
 
@@ -42,10 +56,9 @@ const MainContainer = () => {
       );
     } else {
       setCart([...cart, { ...ele, quantity: 1 }]);
-      
     }
   };
-/* decrease qty of item which match the id */
+  /* decrease qty of item which match the id */
   const DecreaseQty = (ele) => {
     const IsItemInCart = cart.find((item) => item.id === ele.id);
 
@@ -62,31 +75,33 @@ const MainContainer = () => {
       );
     } else {
       setCart([...cart, { ...ele, quantity: 1 }]);
-      
     }
-/* condition for removing item which have less than 1 in quantity */
-    if (ele.quantity===1 ) {
+    /* condition for removing item which have less than 1 in quantity */
+    if (ele.quantity === 1) {
       const filterItem = cart.filter((eleFilter) => {
-        return eleFilter.id!==ele.id;
+        return eleFilter.id !== ele.id;
       });
-      console.log(filterItem)
-        setCart(filterItem);
+      console.log(filterItem);
+      setCart(filterItem);
     }
   };
- 
-  
-  /* find total of all items using reduce function */
-const totalPrice=()=>{
-  return cart.reduce((accumulator,currentItem)=>{
-    /* parseInt(currentItem.Price.replace('$',"")) using parseInt for change into int type and replace use for remove "$" symbol before the price */
-    return accumulator+(parseInt(currentItem.Price.replace('$',""))*currentItem.quantity)
-  },0)
-}
 
-console.log(totalPrice())
+  /* find total of all items using reduce function */
+  const totalPrice = () => {
+    return cart.reduce((accumulator, currentItem) => {
+      /* parseInt(currentItem.Price.replace('$',"")) using parseInt for change into int type and replace use for remove "$" symbol before the price */
+      return (
+        accumulator +
+        parseInt(currentItem.Price.replace("$", "")) * currentItem.quantity
+      );
+    }, 0);
+  };
+
+ 
+  console.log(totalPrice());
 
   console.log(ItemPrice);
-
+console.log("MainContainer Cart:", cart);
   return (
     <div className="px-24 w-full h-full">
       <div className="flex justify-center w-2/3 items-center gap-30 p-16 ">
@@ -118,13 +133,12 @@ console.log(totalPrice())
           </div>
         </div>
 
-        <div className="my-8 w-[30%] flex justify-center  flex-col bg-gray-200 p-4 fixed top-10 right-0 rounded-xl z-50 ">
+        <div className="my-8 w-[30%] flex justify-center  flex-col bg-gray-200 p-4 fixed top-10 right-0 rounded-xl z-50">
           <div className="">
             <h2 className="font-bold">Cart</h2>
           </div>
           <div>
             {cart.map((ele, key) => {
-              
               // setItemPrice(total)
               return (
                 <div className="flex p-4 ">
@@ -154,15 +168,21 @@ console.log(totalPrice())
                       </div>
                     </div>
                   </div>
-                  <div className="text-center font-bold">
-                   
-                  </div>
+                  <div className="text-center font-bold"></div>
                 </div>
               );
-             
             })}
           </div>
-        <div className="text-center font-bold">Total:{totalPrice()}</div>
+          <div className="text-center font-bold">Total:${totalPrice()}</div>
+          <div className="text-center mt-2">
+            <NavLink
+              to="/payment"
+              className="text-white py-2 rounded-3xl px-3 shadow text-sm m-2 card hover:bg-yellow-700"
+              
+            >
+              Proceed To Payment
+            </NavLink>
+          </div>
         </div>
       </div>
     </div>
